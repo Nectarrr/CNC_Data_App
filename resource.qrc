@@ -1,0 +1,11 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>icons/free-icon-reloading-9043724.png</file>
+    <file>icons/free-icon-save-2550221.png</file>
+    <file>icons/free-icon-edit-tools-9800979.png</file>
+    <file>icons/free-icon-file-and-folder-8326488.png</file>
+    <file>icons/free-icon-search-magnifier-symbol-of-interface-51658.png</file>
+    <file>icons/database.png</file>
+    <file>icons/drilling.png</file>
+  </qresource>
+</RCC>
