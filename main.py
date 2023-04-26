@@ -113,19 +113,16 @@ class MainWindow(QMainWindow):
             QMessageBox.information(self, 'Warning', 'Please select path for save data..........')
             return
 
-        ## =============================================================================================================
         ## create save file name
         now = datetime.now().strftime("%Y-%m-%d")
         file_name = f"Save Data {now}.xlsx"
 
-        ## =============================================================================================================
         ## get data from window table
         data_table = self.result_table
 
         try:
             writer = pd.ExcelWriter(f"{file_path}/{file_name}")
 
-            ## =========================================================================================================
             info_headers = [data_table.horizontalHeaderItem(x).text() for x in range(data_table.columnCount())]
             info_df = pd.DataFrame(columns=info_headers)
 
@@ -136,13 +133,13 @@ class MainWindow(QMainWindow):
             ## =========================================================================================================
             ## save data to excel
             info_df.to_excel(writer, index=False)
-            writer.save()
+            writer._save()
 
-            ## =========================================================================================================
+
             ## show some note after save successfully
             QMessageBox.information(self, 'note', 'Data save successfully.')
         except Exception as e:
-            ## =========================================================================================================
+
             ## show some note when save fail
             QMessageBox.information(self, 'note', f'Fail to save data: {e}')
 
