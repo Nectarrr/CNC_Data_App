@@ -3,11 +3,11 @@ from datetime import datetime
 
 import mysql.connector
 import pandas as pd
-from PyQt5.QtWidgets import QMainWindow, QApplication, QTableWidgetItem, QMessageBox, QFileDialog
-from PyQt5.QtCore import pyqtSlot
+from PyQt5.QtWidgets import QMainWindow, QApplication, QTableWidgetItem, QMessageBox, QFileDialog, QLabel
+from PyQt5.QtCore import pyqtSlot, Qt
+from PyQt5.QtGui import QPixmap
 
 from CNC_Data import Ui_MainWindow
-
 
 class ConnectToMySQL():
     def __init__(self):
@@ -21,7 +21,6 @@ class ConnectToMySQL():
     def connect(self):
         """
         create connect with database
-        :return:
         """
         self.con = mysql.connector.connect(
             host=self.host,
@@ -38,7 +37,6 @@ class ConnectToMySQL():
             sql = "SELECT * FROM spindle;"
             cursor.execute(sql)
             result = cursor.fetchall()
-
             return result
 
         except Exception as e:
@@ -61,6 +59,14 @@ class MainWindow(QMainWindow):
         self.save_btn = self.ui.save_btn
         self.file_path = self.ui.lineEdit
         self.result_table = self.ui.tableWidget
+        self.plot = self.ui.graphicsView
+
+        label = QLabel(self)
+        pixmap = QPixmap("icons/graph.XAcqp.png")
+        label.setPixmap(pixmap)
+        label.setGeometry(18, 380, 961, 261)
+        self.layout().addWidget(label)
+        self.show()
 
     @pyqtSlot(bool)
     def on_get_data_btn_clicked(self):
@@ -85,7 +91,6 @@ class MainWindow(QMainWindow):
                 self.result_table.setItem(row, 5, column_6_item)
 
         else:
-            ## =========================================================================================================
             ## show some message if no data got from db
             QMessageBox.information(self, 'Warning', 'No data got from database, please try again')
             return
@@ -94,19 +99,17 @@ class MainWindow(QMainWindow):
     def on_get_path_btn_clicked(self):
         """
         get save file path
-        :return:
         """
         folder_path = QFileDialog.getExistingDirectory(self, "Select Folder")
         if folder_path:
             self.file_path.setText(folder_path)
 
+
     @pyqtSlot(bool)
     def on_save_btn_clicked(self):
         """
         save data to excel
-        :return:
         """
-        ## =============================================================================================================
         ## get the save path from window
         file_path = self.file_path.text().strip()
         if not file_path:
@@ -130,7 +133,6 @@ class MainWindow(QMainWindow):
                 for col in range(data_table.columnCount()):
                     info_df.at[row, info_headers[col]] = data_table.item(row, col).text()
 
-            ## =========================================================================================================
             ## save data to excel
             info_df.to_excel(writer, index=False)
             writer._save()
@@ -142,7 +144,6 @@ class MainWindow(QMainWindow):
 
             ## show some note when save fail
             QMessageBox.information(self, 'note', f'Fail to save data: {e}')
-
 
 if __name__ == '__main__':
     print("start")
