@@ -110,7 +110,7 @@ class MainWindow(QMainWindow):
 
 
         label = QLabel(self)
-        pixmap = QPixmap("icons/graph.XAcqp.png")
+        pixmap = QPixmap("icons/aboba.CTwAH.png")
         label.setPixmap(pixmap)
         label.setGeometry(18, 380, 961, 261)
         self.layout().addWidget(label)
