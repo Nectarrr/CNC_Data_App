@@ -67,6 +67,7 @@ class SecondWindow(QWidget):
 
 
     def update_data(self):
+        ## another connect to db
         db = mysql.connector.connect(
             host='localhost',
             user='root',
