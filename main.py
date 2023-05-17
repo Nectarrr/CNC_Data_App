@@ -3,8 +3,8 @@ from datetime import datetime
 
 import mysql.connector
 import pandas as pd
-from PyQt5.QtWidgets import QMainWindow, QApplication, QTableWidgetItem, QMessageBox, QFileDialog, QLabel
-from PyQt5.QtCore import pyqtSlot, Qt
+from PyQt5.QtWidgets import QMainWindow, QApplication, QTableWidgetItem, QMessageBox, QFileDialog, QLabel, QPushButton, QWidget, QVBoxLayout, QTableWidget
+from PyQt5.QtCore import pyqtSlot
 from PyQt5.QtGui import QPixmap
 
 from CNC_Data import Ui_MainWindow
@@ -47,6 +47,48 @@ class ConnectToMySQL():
             if self.con:
                 self.con.close()
 
+class SecondWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setGeometry(300, 200, 800, 550)
+        self.setWindowTitle('Descriptions')
+        self.label = QLabel(self)
+
+        self.table_widget = QTableWidget(self)
+        self.table_widget.setColumnCount(2)
+        self.table_widget.setHorizontalHeaderLabels(['Message', 'Description'])
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.table_widget)
+        self.setLayout(layout)
+
+        self.update_data()
+
+
+    def update_data(self):
+        db = mysql.connector.connect(
+            host='localhost',
+            user='root',
+            password='123456',
+            database='cnc_data'
+        )
+        cursor = db.cursor()
+        cursor.execute('SELECT Message, Description FROM Descriptions;')
+        results = cursor.fetchall()
+        db.close()
+
+        ## clearing table
+        self.table_widget.clearContents()
+        self.table_widget.setRowCount(0)
+
+        ## filling the table with data from the database
+        for row_number, row_data in enumerate(results):
+            self.table_widget.insertRow(row_number)
+            for column_number, data in enumerate(row_data):
+                item = QTableWidgetItem(str(data))
+                self.table_widget.setItem(row_number, column_number, item)
+
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -61,12 +103,22 @@ class MainWindow(QMainWindow):
         self.result_table = self.ui.tableWidget
         self.plot = self.ui.graphicsView
 
+        self.button = QPushButton('Descriptions', self)
+        self.button.move(750, 110)
+        self.button.clicked.connect(self.open_second_window)
+
+
         label = QLabel(self)
         pixmap = QPixmap("icons/graph.XAcqp.png")
         label.setPixmap(pixmap)
         label.setGeometry(18, 380, 961, 261)
         self.layout().addWidget(label)
         self.show()
+
+    def open_second_window(self):
+
+        self.second_window = SecondWindow()
+        self.second_window.show()
 
     @pyqtSlot(bool)
     def on_get_data_btn_clicked(self):
@@ -139,7 +191,7 @@ class MainWindow(QMainWindow):
 
 
             ## show some note after save successfully
-            QMessageBox.information(self, 'note', 'Data save successfully.')
+            QMessageBox.information(self, 'note', 'Data saved successfully.')
         except Exception as e:
 
             ## show some note when save fail
